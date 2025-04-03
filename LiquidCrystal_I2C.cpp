@@ -129,10 +129,22 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 }
 
 /********** high level commands, for the user! */
-void LiquidCrystal_I2C::clear(){
-	command(LCD_CLEARDISPLAY);// clear display, set cursor position to zero
+//added feature to clear particular diplay
+void LiquidCrystal_I2C::clear(uint8_t row) {
+    if (row == 255) {
+        // Clear the entire display
+        command(LCD_CLEARDISPLAY);
+        delayMicroseconds(2000);  // this command takes a long time!
+if (_oled) setCursor(0,0);
+    } else if (row < _rows) {
+		// Clear only the specified row
+        setCursor(0, row); // Move cursor to the beginning of the row
+        for (uint8_t i = 0; i < _cols; i++) {
+			write(' ');  // Overwrite with spaces
+        }
+        setCursor(0, row); // Move cursor back to the beginning
 	delayMicroseconds(2000);  // this command takes a long time!
-  if (_oled) setCursor(0,0);
+    }
 }
 
 void LiquidCrystal_I2C::home(){
